@@ -1,36 +1,23 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+**Check-Me** небольшое веб-приложение, в котором грубо перенесён концепт Discord бота проекта SS220, предоставляющего статистику пользователя на проекте. Тестовое задание </br>
+Имитация происходит за счёт использования собственной БД со случайными "пользователями"
 
-## Getting Started
+## Используемый стек
+- Frontend: **NextJS** 
+- Backend: **NodeJS**
+- Database: **PostgreSQL**
 
-First, run the development server:
+## Запуск
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Сервер запускается с помощью server.bat в основной папке проекта, а клиент с помощью client.bat
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Проект запускается на следующем адресе [http://localhost:3000](http://localhost:3000). API запросы проходят по 3001 порту
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## API
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- /getUser/**ckey** возвращает ответ в формате JSON с информацией по игроку (привязанный discord, первое время захода, последнее время захода и ckey) 
 
-## Learn More
+## ToDo
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Расширить API (POST, PUT, DELETE)
+- Создать калстер из двух БД и реализовать его отказоустойчивость через **Patroni**
+- Внедрить простые скрипты на Python, позволяющие работать с БД
