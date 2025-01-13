@@ -1,7 +1,6 @@
-import React from 'react'
-import AppInfoProps from '../props'
+import User from '../props'
 
-export const AppInfo = ({ckey, discord_id, experience, first_apperance, last_apperance, charlist}: AppInfoProps) => {
+export const AppInfo = ({ckey, discord_name, first_appearance, last_appearance}: User) => {
     return (
         <>
         <div id="app-header" className='ml-4 shadow-sm shadow-black pt-2 pb-2'>
@@ -10,18 +9,14 @@ export const AppInfo = ({ckey, discord_id, experience, first_apperance, last_app
         <div id="container" className='ml-4'>
             <div id="app-meta-info">
                 <ul>
-                    <li> Дискорд:  {discord_id ? discord_id : " "} </li>
-                    <li> Стаж: {experience ? experience.toLocaleDateString() : " "} </li> 
-                    <li> Первое появление: {first_apperance ? first_apperance.toLocaleDateString() : " "} </li> 
-                    <li> Последнее появление: {last_apperance ? last_apperance.toLocaleDateString() : " "} </li> 
+                    <li> Дискорд:  {discord_name ? discord_name : " "} </li>
+                    <li> Первое появление: {first_appearance ? first_appearance : " "} </li> 
+                    <li> Последнее появление: {last_appearance ? last_appearance : " "} </li> 
                 </ul>
             </div>
             <div id="app-ingame">
                 <h1 className='pb-1 font-bold'> Персонажи: </h1>
                 <ul>
-                    {charlist ? charlist.map( (key, i) => (
-                        <li key={i}> {i}. {key} </li>
-                    )) : "" }
                 </ul>
             </div>
         </div>

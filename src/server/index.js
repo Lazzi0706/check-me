@@ -1,34 +1,23 @@
 const express = require('express')
+const cors = require('cors')
+const db = require('./db')
+const path = require('path')
+
 const app = express()
-const Pool = require('pg').Pool
-const PORT = 3001
 
-const pool = new Pool({
-    user: 'lazzi',
-    host: '192.168.1.10',
-    database: 'checkme',
-    password: '123',
-    port: 5432
+require('dotenv').config({
+    path: path.resolve(__dirname, '../../.env')
 })
 
-pool.connect().then( () => {
-    console.log('DB: Connected to database successful')
-}).catch( (err) => {
-    console.error('DB: Something went wrong!', err)
-})
+const checkme = db.ConnectToDB(process.env.REACT_APP_DB_USER, process.env.REACT_APP_DB_PASSWORD, process.env.REACT_APP_DB_ADDR, process.env.REACT_APP_DB_NAME, process.env.REACT_APP_DB_PORT)
 
 app.use(express.static(__dirname))
+app.use(cors())
 
 app.get('/api/getUser/:ckey', (req, res) => {
-    const ckey = req.params.ckey;
-
-    pool.query('SELECT * FROM users WHERE ckey = $1', [ckey]).then( (result) => {
-        res.send(res.json(result.rows))
-    }).catch( (err) => {
-        console.error('error ', err)
-    })
+    db.GetUser(checkme, req.params.ckey, res)
 })
 
-app.listen(PORT, () => {
-    console.log(PORT)
+app.listen(process.env.REACT_APP_SERVER_PORT, () => {
+    console.log(process.env.REACT_APP_SERVER_PORT)
 })

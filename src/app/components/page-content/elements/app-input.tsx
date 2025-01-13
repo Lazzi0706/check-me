@@ -1,22 +1,35 @@
 'use client'
 
 import React, { useState, useEffect} from 'react'
+import User from '../props'
 
-export const AppInput = () => {
+export const AppInput = ({userInfo}: any) => {
     const [ckey, setCkey] = useState<string>('')
-    const [data, setData] = useState<any>()
+    const API_URL = 'http://localhost:3001/api'
 
-    const handleInput = (e : React.ChangeEvent<HTMLInputElement>) => {
+    const handleInput = async (e : React.ChangeEvent<HTMLInputElement>) => {
         setCkey(e.target.value)
     }
-    
-    const handleSubmit = (e : any) => {
+
+    const handleSubmit = async (e : any) => {
         e.preventDefault()
-        useEffect( () => {
-            fetch('http://localhost:3001/api/getUser/' + ckey)
-            .then( (data) => setData(data.json()))
-            .catch( (err) => console.error(err))
+        fetch(`${API_URL}/getUser/${ckey}`)
+        .then((res) => {
+            return res.json()
         })
+        .then((data : Array<User>) => {
+            if (data.length == 0) { // bruh
+                userInfo()
+                return
+            }
+            userInfo({
+                ckey: data[0]['ckey'],
+                first_appearance: data[0]['first_appearance'],
+                last_appearance: data[0]['last_appearance'],
+                discord_name: data[0]['discord_name']
+            })
+        })
+        .catch((e) => console.error(e))
     }
 
     return (
