@@ -1,27 +1,24 @@
-const Pool = require('pg').Pool
+const { Sequelize } = require('sequelize')
 
-const ConnectToDB = (user, password, host, db, port) => {
-    const pool = new Pool({
-        user: user,
-        host: host,
-        database: db,
-        password: password,
-        port: port || 5432
-    })
-    pool.connect().then( () => {
-        console.log('DB: Connected to database successful')
-    }).catch( (err) => {
-        console.error('DB: Something went wrong!', err)
-    })
-    return pool
+const main_ipv4 = '192.168.1.13'
+const replica_ipv4 = '192.168.1.14'
+
+const sequelize = new Sequelize('postgresql://lazzi:123@192.168.1.13:5432/checkme', {
+    dialect: 'postgres',
+    replication: {
+        read: [ { host: replica_ipv4 } ],
+        write: [ { host: main_ipv4 } ]
+    }
+})
+
+const InitializeDataBaseConnection = async (database) => {
+    try {
+        console.log('Connected to database succesfully.')
+        await database.authenticate()
+    }
+    catch (e) {
+        console.error('Unable to connect database: ', e)
+    }
 }
 
-const GetUser = async (pool, ckey, responce) => {
-    pool.query('SELECT * FROM users WHERE ckey = $1', [ckey]).then( (result) => {
-        responce.send(responce.json(result.rows))
-    }).catch( (err) => {
-        console.error(err)
-    })
-}
-
-module.exports = {ConnectToDB, GetUser}
+module.exports = { InitializeDataBaseConnection, sequelize }

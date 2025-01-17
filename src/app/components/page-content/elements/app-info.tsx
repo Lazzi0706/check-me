@@ -1,6 +1,6 @@
 import User from '../props'
 
-export const AppInfo = ({ckey, discord_name, first_appearance, last_appearance}: User) => {
+export const AppInfo = ({ckey, discord_id, first_appearance, last_appearance}: User) => {
     return (
         <>
         <div id="app-header" className='ml-4 shadow-sm shadow-black pt-2 pb-2'>
@@ -9,7 +9,7 @@ export const AppInfo = ({ckey, discord_name, first_appearance, last_appearance}:
         <div id="container" className='ml-4'>
             <div id="app-meta-info">
                 <ul>
-                    <li> Дискорд:  {discord_name ? discord_name : " "} </li>
+                    <li> Дискорд:  {discord_id ? discord_id : " "} </li>
                     <li> Первое появление: {first_appearance ? first_appearance : " "} </li> 
                     <li> Последнее появление: {last_appearance ? last_appearance : " "} </li> 
                 </ul>

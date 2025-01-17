@@ -1,7 +1,6 @@
 'use client'
 
-import React, { useState, useEffect} from 'react'
-import User from '../props'
+import React, { useState } from 'react'
 
 export const AppInput = ({userInfo}: any) => {
     const [ckey, setCkey] = useState<string>('')
@@ -14,21 +13,8 @@ export const AppInput = ({userInfo}: any) => {
     const handleSubmit = async (e : any) => {
         e.preventDefault()
         fetch(`${API_URL}/getUser/${ckey}`)
-        .then((res) => {
-            return res.json()
-        })
-        .then((data : Array<User>) => {
-            if (data.length == 0) { // bruh
-                userInfo()
-                return
-            }
-            userInfo({
-                ckey: data[0]['ckey'],
-                first_appearance: data[0]['first_appearance'],
-                last_appearance: data[0]['last_appearance'],
-                discord_name: data[0]['discord_name']
-            })
-        })
+        .then((res) => { return res.json() })
+        .then((data) => { userInfo(data[0]) })
         .catch((e) => console.error(e))
     }
 
