@@ -10,7 +10,7 @@ app.use(cors())
 
 InitializeDataBaseConnection(sequelize)
 
-app.get('/api/getUser/:ckey', (req, res) => {
+app.get('/api/user/:ckey', (req, res) => {
     sequelize.query(
         `
         SELECT * FROM users WHERE ckey = '${req.params.ckey}';

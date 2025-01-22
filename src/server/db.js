@@ -1,23 +1,23 @@
 const { Sequelize } = require('sequelize')
+const path = require('node:path')
 
-const main_ipv4 = '192.168.1.13'
-const replica_ipv4 = '192.168.1.14'
 
-const sequelize = new Sequelize('postgresql://lazzi:123@192.168.1.13:5432/checkme', {
+require('dotenv').config({path: path.join(__dirname, '../../.env')})
+
+const sequelize = new Sequelize(process.env.REACT_APP_DB_MAIN, {
     dialect: 'postgres',
     replication: {
-        read: [ { host: replica_ipv4 } ],
-        write: [ { host: main_ipv4 } ]
+        read: [ { host: process.env.REACT_APP_MAIN_IPV4 } ],
+        write: [ { host: process.env.REACT_APP_REPLICA_IPV4 } ]
     }
 })
 
 const InitializeDataBaseConnection = async (database) => {
     try {
-        console.log('Connected to database succesfully.')
         await database.authenticate()
     }
     catch (e) {
-        console.error('Unable to connect database: ', e)
+        console.error('Unable to connect to database: ', e)
     }
 }
 

@@ -12,7 +12,7 @@ export const AppInput = ({userInfo}: any) => {
 
     const handleSubmit = async (e : any) => {
         e.preventDefault()
-        fetch(`${API_URL}/getUser/${ckey}`)
+        fetch(`${API_URL}/user/${ckey}`)
         .then((res) => { return res.json() })
         .then((data) => { userInfo(data[0]) })
         .catch((e) => console.error(e))
