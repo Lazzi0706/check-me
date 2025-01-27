@@ -5,4 +5,13 @@ export interface User {
     discord_id?: string;
   }
 
-export default User
+export interface Character {
+  id: number,
+  name: string,
+  age: number
+}
+
+export interface UserInfo {
+  user: User,
+  characters?: Array<Character>
+} 

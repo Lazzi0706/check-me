@@ -1,9 +1,11 @@
 'use client'
 
 import React, { useState } from 'react'
+import { UserInfo } from '../props'
 
 export const AppInput = ({userInfo}: any) => {
     const [ckey, setCkey] = useState<string>('')
+    
     const API_URL = 'http://localhost:3001/api'
 
     const handleInput = async (e : React.ChangeEvent<HTMLInputElement>) => {
@@ -12,10 +14,19 @@ export const AppInput = ({userInfo}: any) => {
 
     const handleSubmit = async (e : any) => {
         e.preventDefault()
-        fetch(`${API_URL}/user/${ckey}`)
-        .then((res) => { return res.json() })
-        .then((data) => { userInfo(data[0]) })
-        .catch((e) => console.error(e))
+        
+        const success = ( res : any )  => res.ok ? res.json() : Promise.resolve({})
+
+        const user = fetch(`${API_URL}/user/${ckey}`).then(success)
+        const charatcers = fetch(`${API_URL}/user/${ckey}/characters`).then(success)
+
+        Promise.all([user, charatcers])
+        .then(([userRes, charactersRes]) => {
+            userInfo({
+                user: userRes[0],
+                characters: charactersRes
+            })
+        })
     }
 
     return (
