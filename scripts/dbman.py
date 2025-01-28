@@ -1,43 +1,73 @@
+from datetime import datetime
 import os
 
-from sqlite3 import Cursor
-from string import printable
-from sys import argv
+from sqlite3 import Connection, Cursor, Date
 from dotenv import load_dotenv
-from prettytable import PrettyTable, from_db_cursor
+from prettytable import from_db_cursor
 
 import psycopg2
+from psycopg2.extensions import AsIs 
 import inquirer
 
 def ConnectToDB(constrnig):
     return psycopg2.connect(constrnig)
 
-def LoadEnv():
-    path_to_prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    filepath = os.path.join(path_to_prev_dir, '.env')
-    
-    load_dotenv(filepath)
-
 def SQL_SELECT(cursor: Cursor, table: str):
     try:
-        cursor.execute("""SELECT * FROM %s;""", [table.lower()] )
+        cursor.execute("SELECT * FROM %s;", (AsIs(table.lower()), ))
         tbl = from_db_cursor(cursor)
-
         print(tbl)
     except (Exception, psycopg2.Error) as error:
         print('Error while working with PostgreSQL', error)
     finally:
         cursor.close()
 
+def SQL_USER_INSERT(connection: Connection):
+    try:
+        sel = [
+            inquirer.Text('ckey', message='Ckey'),
+            inquirer.Text('discord', message='Discord id'),
+            inquirer.Text('first', message='First appearance'),
+            inquirer.Text('last', message='Last appearance')
+        ]
+        
+        res = inquirer.prompt(sel)
 
-def SQL_INSERT():
-    pass
+        first_normalized = datetime.strptime(res['first'], '%Y-%m-%d')
+        last_normalized = datetime.strptime(res['last'], '%Y-%m-%d')
 
-def SQL_UPDATE():
-    pass
+        connection.cursor().execute("INSERT INTO users (ckey, discord_id, first_appearance, last_appearance) VALUES (%s, %s, %s, %s);", 
+                                    (res['ckey'], res['discord'], first_normalized, last_normalized, ))
+        
+        connection.commit()
+    except (Exception, psycopg2.Error) as error:
+        print('Error while working with PostgreSQL', error)
+    finally:
+        connection.cursor().close()
 
-def SQL_DELETE():
-    pass
+def SQL_CHARACTER_INSERT(connection: Connection):
+    try:
+        sel = [
+            inquirer.Text('owner', message='Owner (ckey)'),
+            inquirer.Text('name', message='Character name'),
+            inquirer.Text('age', message='Character age'),
+        ]
+
+        
+        res = inquirer.prompt(sel)
+
+        connection.cursor().execute("INSERT INTO characters (owner_id, name, age) VALUES (%s, %s, %s);", (res['owner'], res['name'], res['age'], ))
+        connection.commit()
+    except (Exception, psycopg2.Error) as error:
+        print('Error while working with PostgreSQL', error)
+    finally:
+        connection.cursor().close()
+
+def LoadEnv():
+    path_to_prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    filepath = os.path.join(path_to_prev_dir, '.env')
+    
+    load_dotenv(filepath)
 
 def PopulateMenu():
     try:
@@ -48,7 +78,7 @@ def PopulateMenu():
     
     selector = [
         inquirer.List('table', 'Select TABLE', ['USERS', 'CHARACTERS']),
-        inquirer.List('operation', 'Operation', ['SELECT', 'INSERT', 'UPDATE', 'DELETE'])    
+        inquirer.List('operation', 'Operation', ['SELECT', 'INSERT', 'UPDATE', 'DELETE']),
     ]
 
     result = inquirer.prompt(selector)
@@ -57,9 +87,10 @@ def PopulateMenu():
         case 'SELECT':
             SQL_SELECT(connection.cursor(), result['table'])
         case 'INSERT':
-            pass
-        case 'UPDATE':
-            pass
+            if result['table'] == "USERS": 
+                SQL_USER_INSERT(connection)
+            else: 
+                SQL_CHARACTER_INSERT(connection)
         case 'DELETE':
             pass
 
