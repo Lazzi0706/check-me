@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState } from 'react'
-import { UserInfo } from '../props'
 
 export const AppInput = ({userInfo}: any) => {
     const [ckey, setCkey] = useState<string>('')

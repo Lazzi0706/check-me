@@ -27,8 +27,8 @@ def SQL_USER_INSERT(connection: Connection):
         sel = [
             inquirer.Text('ckey', message='Ckey'),
             inquirer.Text('discord', message='Discord id'),
-            inquirer.Text('first', message='First appearance'),
-            inquirer.Text('last', message='Last appearance')
+            inquirer.Text('first', message='First appearance (Y-m-d)'),
+            inquirer.Text('last', message='Last appearance (Y-m-d)')
         ]
         
         res = inquirer.prompt(sel)
@@ -57,6 +57,37 @@ def SQL_CHARACTER_INSERT(connection: Connection):
         res = inquirer.prompt(sel)
 
         connection.cursor().execute("INSERT INTO characters (owner_id, name, age) VALUES (%s, %s, %s);", (res['owner'], res['name'], res['age'], ))
+        connection.commit()
+    except (Exception, psycopg2.Error) as error:
+        print('Error while working with PostgreSQL', error)
+    finally:
+        connection.cursor().close()
+
+def SQL_USER_DELETE(connection: Connection):
+    try:
+        sel = [
+            inquirer.Text('ckey', message='Ckey')    
+        ]
+
+        res = inquirer.prompt(sel)
+
+        connection.cursor().execute("DELETE FROM users WHERE ckey = %s", (AsIs(sel['ckey'])))
+        connection.commit()
+    except (Exception, psycopg2.Error) as error:
+        print('Error while working with PostgreSQL', error)
+    finally:
+        connection.cursor().close()
+
+def SQL_CHARACTER_DELETE(connection: Connection):
+    try:
+        sel = [
+            inquirer.Text('ckey', message='Owner ckey'),
+            inquirer.Text('name', message='Character name')    
+        ]
+
+        res = inquirer.prompt(sel)
+
+        connection.cursor().execute("DELETE FROM characters WHERE owner_id = %s AND name = %s", (AsIs(sel['ckey']), AsIs(sel['name'])))
         connection.commit()
     except (Exception, psycopg2.Error) as error:
         print('Error while working with PostgreSQL', error)
@@ -92,7 +123,10 @@ def PopulateMenu():
             else: 
                 SQL_CHARACTER_INSERT(connection)
         case 'DELETE':
-            pass
+            if result['table'] == 'USERS':
+                SQL_USER_DELETE(connection)
+            else:
+                SQL_CHARACTER_DELETE(connection)
 
 if __name__ == '__main__':
     LoadEnv()
